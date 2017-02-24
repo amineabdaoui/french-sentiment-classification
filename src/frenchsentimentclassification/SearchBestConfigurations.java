@@ -1,5 +1,6 @@
 package frenchsentimentclassification;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.util.Properties;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.SMO;
 import weka.core.Instances;
+import weka.core.converters.ArffSaver;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
@@ -17,18 +19,17 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
  */
 public class SearchBestConfigurations {
     
-    public static Properties bestNgrams(ArrayList<Instances> trains, ArrayList<Instances> tests, Properties prop) throws IOException, Exception{
+    private ArrayList<Instances> trains;
+    private ArrayList<Instances> tests;
+    
+    public SearchBestConfigurations(ArrayList<Instances> trs, ArrayList<Instances> tss){
+        trains = new ArrayList<Instances>(trs);
+        tests = new ArrayList<Instances>(tss);
+    }
+    
+    public Properties bestNgrams(Properties prop) throws IOException, Exception{
         double miU=0, miB=0, miUB=0;
         System.out.println(prop.size());
-        // evaluate unigrams
-        FileOutputStream outU = new FileOutputStream("test/configU.properties");
-        Properties propU = prop;
-        propU.setProperty("Ngrams.min", "1");
-        propU.setProperty("Ngrams.max", "1");
-        propU.store(outU, null);
-        outU.close();
-        miU = runNgrams(trains,tests,prop);
-        System.out.println("miU = "+miU);
         // evaluate bigrams
         FileOutputStream outB = new FileOutputStream("test/configB.properties");
         Properties propB = prop;
@@ -36,8 +37,17 @@ public class SearchBestConfigurations {
         propB.setProperty("Ngrams.max", "2");
         propB.store(outB, null);
         outB.close();
-        miB = runNgrams(trains,tests,propB);
+        miB = runNgrams(propB);
         System.out.println("miB = "+miB);
+        // evaluate unigrams
+        FileOutputStream outU = new FileOutputStream("test/configU.properties");
+        Properties propU = prop;
+        propU.setProperty("Ngrams.min", "1");
+        propU.setProperty("Ngrams.max", "1");
+        propU.store(outU, null);
+        outU.close();
+        miU = runNgrams(propU);
+        System.out.println("miU = "+miU);
         // evaluate unigrams+bigrams
         FileOutputStream outUB = new FileOutputStream("test/configUB.properties");
         Properties propUB = prop;
@@ -45,7 +55,7 @@ public class SearchBestConfigurations {
         propUB.setProperty("Ngrams.max", "2");
         propUB.store(outUB, null);
         outUB.close();
-        miUB = runNgrams(trains,tests,propUB);
+        miUB = runNgrams(propUB);
         System.out.println("miUB = "+miUB);
         
         FileOutputStream out;
@@ -66,7 +76,7 @@ public class SearchBestConfigurations {
         return prop;
     }
     
-    public static double runNgrams(ArrayList<Instances> trains, ArrayList<Instances> tests, Properties props) throws FileNotFoundException, IOException, Exception{
+    public double runNgrams(Properties props) throws FileNotFoundException, IOException, Exception{
         Instances train, test;
         double miF=0;
         for (int i=0; i<trains.size(); i++){
@@ -86,8 +96,16 @@ public class SearchBestConfigurations {
             eTest.evaluateModel(classifier, test);
             miF += eTest.unweightedMicroFmeasure();
             System.out.println(test.size()+" "+eTest.unweightedMicroFmeasure());
+            saveFile(test,"test/"+props.getProperty("Ngrams.min")+props.getProperty("Ngrams.max")+"-"+i+".arrff");
         }
         return miF/trains.size();
+    }
+    
+    public void saveFile(Instances dataSet, String file) throws IOException{
+        ArffSaver saver = new ArffSaver();
+         saver.setInstances(dataSet);
+         saver.setFile(new File(file));
+         saver.writeBatch();
     }
     
 }
