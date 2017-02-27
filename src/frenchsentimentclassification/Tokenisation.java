@@ -25,7 +25,6 @@ public class Tokenisation {
         filter.setMinTermFreq(1);
         NGramTokenizer tok = new NGramTokenizer();
         tok.setDelimiters(" \n 	.,;'\"()?!-/<>‘’“”…«»•&{[|`^]}$*%");
-        System.out.print(prop.getProperty("Ngrams.min")+" "+prop.getProperty("Ngrams.max")+"\t");
         tok.setNGramMinSize(Integer.parseInt(prop.getProperty("Ngrams.min")));
         tok.setNGramMaxSize(Integer.parseInt(prop.getProperty("Ngrams.max")));
         filter.setTokenizer(tok);

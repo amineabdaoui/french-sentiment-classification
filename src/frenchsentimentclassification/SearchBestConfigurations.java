@@ -29,16 +29,6 @@ public class SearchBestConfigurations {
     
     public Properties bestNgrams(Properties prop) throws IOException, Exception{
         double miU=0, miB=0, miUB=0;
-        System.out.println(prop.size());
-        // evaluate bigrams
-        FileOutputStream outB = new FileOutputStream("test/configB.properties");
-        Properties propB = prop;
-        propB.setProperty("Ngrams.min", "2");
-        propB.setProperty("Ngrams.max", "2");
-        propB.store(outB, null);
-        outB.close();
-        miB = runNgrams(propB);
-        System.out.println("miB = "+miB);
         // evaluate unigrams
         FileOutputStream outU = new FileOutputStream("test/configU.properties");
         Properties propU = prop;
@@ -48,6 +38,15 @@ public class SearchBestConfigurations {
         outU.close();
         miU = runNgrams(propU);
         System.out.println("miU = "+miU);
+        // evaluate bigrams
+        FileOutputStream outB = new FileOutputStream("test/configB.properties");
+        Properties propB = prop;
+        propB.setProperty("Ngrams.min", "2");
+        propB.setProperty("Ngrams.max", "2");
+        propB.store(outB, null);
+        outB.close();
+        miB = runNgrams(propB);
+        System.out.println("miB = "+miB);
         // evaluate unigrams+bigrams
         FileOutputStream outUB = new FileOutputStream("test/configUB.properties");
         Properties propUB = prop;
@@ -72,7 +71,6 @@ public class SearchBestConfigurations {
             prop.store(out, null);
             out.close();
         }
-        
         return prop;
     }
     
@@ -80,10 +78,11 @@ public class SearchBestConfigurations {
         Instances train, test;
         double miF=0;
         for (int i=0; i<trains.size(); i++){
-            train = trains.get(i);
-            test = tests.get(i);
+            train = new Instances(trains.get(i));
+            test = new Instances(tests.get(i));
             System.out.print(test.numAttributes()+"\t");
             StringToWordVector filter = Tokenisation.WordNgrams(props);
+            
             filter.setInputFormat(train);
             train = Filter.useFilter(train, filter);
             test = Filter.useFilter(test, filter);

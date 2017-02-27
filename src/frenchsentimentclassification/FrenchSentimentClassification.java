@@ -1,4 +1,4 @@
-/*
+    /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -15,9 +15,16 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
+import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.functions.SMO;
+import weka.classifiers.rules.JRip;
+import weka.classifiers.trees.J48;
 import weka.core.Instances;
+import weka.core.tokenizers.NGramTokenizer;
+import static weka.estimators.Estimator.clone;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
@@ -39,7 +46,7 @@ public class FrenchSentimentClassification {
 	InputStream input = new FileInputStream(propPath);
         prop.load(input);
         
-        int nbFolds=3;
+        int nbFolds=10;
         BufferedReader r;
         Instances data;
         
@@ -56,11 +63,14 @@ public class FrenchSentimentClassification {
         data.setClass(data.attribute("_class"));
         data.stratify(nbFolds);
         for (int f=0; f<nbFolds; f++){
-            trains.add(data.trainCV(nbFolds,f));
-            tests.add(data.testCV(nbFolds,f));
+            Instances Tr = data.trainCV(nbFolds,f);
+            Instances Te = data.testCV(nbFolds,f);
+            trains.add(Tr);            
+            tests.add(Te);
         }
         
-        /*SearchBestConfigurations sbc = new SearchBestConfigurations(trains,tests);
+        
+        SearchBestConfigurations sbc = new SearchBestConfigurations(trains,tests);
         
         // Find the best ngrams
         prop = sbc.bestNgrams(prop);
@@ -69,72 +79,5 @@ public class FrenchSentimentClassification {
         // Find the best syntatic
         
         // Find the best ngrams
-*/
-
-
-        String propPath2="test/configU.properties";
-        Properties propC = new Properties();
-	InputStream inputC = new FileInputStream(propPath2);
-        propC.load(inputC);   
-        inputC.close();
-        
-        Instances trai, tes;
-        double mi=0;
-        for (int i=0; i<trains.size(); i++){
-            trai = trains.get(i);
-            tes = tests.get(i);
-            System.out.print(tes.numAttributes()+"\t");
-            StringToWordVector filter = Tokenisation.WordNgrams(propC);
-            filter.setInputFormat(trai);
-            trai = Filter.useFilter(trai, filter);
-            tes = Filter.useFilter(tes, filter);
-            System.out.print(tes.numAttributes()+"\t");
-            trai.setClass(trai.attribute("_class"));
-            tes.setClass(trai.attribute("_class"));
-            SMO classifier = new SMO();
-            classifier.buildClassifier(trai);
-            Evaluation eTest = new Evaluation(trai);
-            eTest.evaluateModel(classifier, tes);
-            mi += eTest.unweightedMicroFmeasure();
-            System.out.println(tes.size()+" "+eTest.unweightedMicroFmeasure());
-            //saveFile(test,"test/"+propB.getProperty("Ngrams.min")+propB.getProperty("Ngrams.max")+"-"+i+".arrff");
-        }
-        System.out.println(mi/trains.size());
-        
-        
-        String propPath1="test/configB.properties";
-        Properties propB = new Properties();
-	InputStream inputB = new FileInputStream(propPath1);
-        propB.load(inputB);
-        inputB.close();
-        
-        Instances train, test;
-        double miF=0;
-        for (int i=0; i<trains.size(); i++){
-            train = trains.get(i);
-            test = tests.get(i);
-            System.out.print(test.numAttributes()+"\t");
-            StringToWordVector filter = Tokenisation.WordNgrams(propB);
-            filter.setInputFormat(train);
-            train = Filter.useFilter(train, filter);
-            test = Filter.useFilter(test, filter);
-            System.out.print(test.numAttributes()+"\t");
-            train.setClass(train.attribute("_class"));
-            test.setClass(train.attribute("_class"));
-            SMO classifier2 = new SMO();
-            classifier2.buildClassifier(train);
-            Evaluation eTest2 = new Evaluation(train);
-            eTest2.evaluateModel(classifier2, test);
-            miF += eTest2.unweightedMicroFmeasure();
-            System.out.println(test.size()+" "+eTest2.unweightedMicroFmeasure());
-            //saveFile(test,"test/"+propB.getProperty("Ngrams.min")+propB.getProperty("Ngrams.max")+"-"+i+".arrff");
-        }
-        System.out.println(miF/trains.size());
-        
-        
-        
-        
-        
     }
-    
 }
