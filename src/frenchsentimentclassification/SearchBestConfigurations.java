@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Properties;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.SMO;
@@ -28,49 +29,36 @@ public class SearchBestConfigurations {
     }
     
     public Properties bestNgrams(Properties prop) throws IOException, Exception{
-        double miU=0, miB=0, miUB=0;
-        // evaluate unigrams
-        FileOutputStream outU = new FileOutputStream("test/configU.properties");
-        Properties propU = prop;
-        propU.setProperty("Ngrams.min", "1");
-        propU.setProperty("Ngrams.max", "1");
-        propU.store(outU, null);
-        outU.close();
-        miU = runNgrams(propU);
-        System.out.println("miU = "+miU);
-        // evaluate bigrams
-        FileOutputStream outB = new FileOutputStream("test/configB.properties");
-        Properties propB = prop;
-        propB.setProperty("Ngrams.min", "2");
-        propB.setProperty("Ngrams.max", "2");
-        propB.store(outB, null);
-        outB.close();
-        miB = runNgrams(propB);
-        System.out.println("miB = "+miB);
-        // evaluate unigrams+bigrams
-        FileOutputStream outUB = new FileOutputStream("test/configUB.properties");
-        Properties propUB = prop;
-        propUB.setProperty("Ngrams.min", "1");
-        propUB.setProperty("Ngrams.max", "2");
-        propUB.store(outUB, null);
-        outUB.close();
-        miUB = runNgrams(propUB);
-        System.out.println("miUB = "+miUB);
-        
-        FileOutputStream out;
-        if (miU >= miB && miU >= miUB){
-            out = new FileOutputStream("test/config.properties");
-            prop.setProperty("Ngrams.min", "1");
-            prop.setProperty("Ngrams.max", "1");
-            prop.store(out, null);
-            out.close();
-        } else if (miB >= miU && miB >= miUB){
-            out = new FileOutputStream("test/config.properties");
-            prop.setProperty("Ngrams.min", "2");
-            prop.setProperty("Ngrams.max", "2");
-            prop.store(out, null);
-            out.close();
+        ArrayList<Properties> alProp = new ArrayList();
+        ArrayList<Double> alMiF = new ArrayList();
+        int min=Integer.parseInt(prop.getProperty("Ngrams.min"));
+        int max=Integer.parseInt(prop.getProperty("Ngrams.max"));
+        double res;
+        for (int i=min; i<=max; i++){
+            for (int j=i; j<=max; j++){
+                FileOutputStream out = new FileOutputStream("test/config.properties");
+                prop.setProperty("Ngrams.min", String.valueOf(i));
+                prop.setProperty("Ngrams.max", String.valueOf(j));
+                prop.store(out, null);
+                out.close();
+                res = runNgrams(prop);
+                alProp.add(new Properties(prop));
+                alMiF.add(res);
+                System.out.println(i+", "+j+" = "+res);
+            }
         }
+        // Find the best configuration
+        double bestRes = Collections.max(alMiF);
+        int bestIndex = alMiF.indexOf(bestRes);
+        System.out.println(alProp.get(bestIndex).getProperty("Ngrams.min")+" "+alProp.get(bestIndex).getProperty("Ngrams.max"));
+        
+        FileOutputStream out = new FileOutputStream("test/config.properties");
+        prop.setProperty("Ngrams.min", alProp.get(bestIndex).getProperty("Ngrams.min"));
+        prop.setProperty("Ngrams.max", alProp.get(bestIndex).getProperty("Ngrams.max"));
+        prop.store(out, null);
+        out.close();
+        System.out.println(alProp.get(bestIndex).getProperty("Ngrams.min")+" "+alProp.get(bestIndex).getProperty("Ngrams.max"));
+
         return prop;
     }
     
@@ -80,13 +68,11 @@ public class SearchBestConfigurations {
         for (int i=0; i<trains.size(); i++){
             train = new Instances(trains.get(i));
             test = new Instances(tests.get(i));
-            System.out.print(test.numAttributes()+"\t");
             StringToWordVector filter = Tokenisation.WordNgrams(props);
             
             filter.setInputFormat(train);
             train = Filter.useFilter(train, filter);
             test = Filter.useFilter(test, filter);
-            System.out.print(test.numAttributes()+"\t");
             train.setClass(train.attribute("_class"));
             test.setClass(train.attribute("_class"));
             SMO classifier = new SMO();
@@ -94,8 +80,6 @@ public class SearchBestConfigurations {
             Evaluation eTest = new Evaluation(train);
             eTest.evaluateModel(classifier, test);
             miF += eTest.unweightedMicroFmeasure();
-            System.out.println(test.size()+" "+eTest.unweightedMicroFmeasure());
-            saveFile(test,"test/"+props.getProperty("Ngrams.min")+props.getProperty("Ngrams.max")+"-"+i+".arrff");
         }
         return miF/trains.size();
     }
