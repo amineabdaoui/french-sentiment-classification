@@ -1,5 +1,7 @@
 *.class
 
+test
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
