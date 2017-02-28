@@ -73,6 +73,9 @@ public class FrenchSentimentClassification {
         SearchBestConfigurations sbc = new SearchBestConfigurations(trains,tests);
         
         // Find the best ngrams
+        System.out.println("####################");
+        System.out.println("       Ngrams");
+        System.out.println("####################");
         prop = sbc.bestNgrams(prop);
         // Estimate the best complexity parameter
         

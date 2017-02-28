@@ -37,12 +37,13 @@ public class SearchBestConfigurations {
         for (int i=min; i<=max; i++){
             for (int j=i; j<=max; j++){
                 FileOutputStream out = new FileOutputStream("test/config"+i+j+".properties");
-                prop.setProperty("Ngrams.min", String.valueOf(i));
-                prop.setProperty("Ngrams.max", String.valueOf(j));
-                prop.store(out, null);
+                Properties propTampon = new Properties(prop);
+                propTampon.setProperty("Ngrams.min", String.valueOf(i));
+                propTampon.setProperty("Ngrams.max", String.valueOf(j));
+                propTampon.store(out, null);
                 out.close();
-                res = runNgrams(prop);
-                alProp.add(new Properties(prop));
+                res = runNgrams(propTampon);
+                alProp.add(new Properties(propTampon));
                 alMiF.add(res);
                 System.out.println(i+", "+j+" = "+res);
             }
@@ -50,7 +51,6 @@ public class SearchBestConfigurations {
         // Find the best configuration
         double bestRes = Collections.max(alMiF);
         int bestIndex = alMiF.indexOf(bestRes);
-        System.out.println(bestIndex+" "+alProp.get(bestIndex).getProperty("Ngrams.min")+" "+alProp.get(bestIndex).getProperty("Ngrams.max"));
         
         FileOutputStream out = new FileOutputStream("test/config.properties");
         prop.setProperty("Ngrams.min", alProp.get(bestIndex).getProperty("Ngrams.min"));
