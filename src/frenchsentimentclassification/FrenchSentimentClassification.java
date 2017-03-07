@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
@@ -40,6 +41,8 @@ public class FrenchSentimentClassification {
     public static void main(String[] args) throws FileNotFoundException, IOException, Exception {
         //String file=args[0];
         String file="test/task1-train.arff";
+        
+        PrintWriter Out = new PrintWriter("SaveResults.txt");
         
         String propPath="test/config.properties";
         Properties prop = new Properties();
@@ -71,16 +74,26 @@ public class FrenchSentimentClassification {
         
         
         SearchBestConfigurations sbc = new SearchBestConfigurations(trains,tests);
-        
         // Find the best ngrams
         System.out.println("####################");
         System.out.println("       Ngrams");
         System.out.println("####################");
-        prop = sbc.bestNgrams(prop);
+        //prop = sbc.bestNgrams(prop);
+        PropWithMeasure ngrams = sbc.bestNgrams(prop, Out);
+        prop = ngrams.getProp();
+        double measure = ngrams.getMeasure();
         // Estimate the best complexity parameter
         
         // Find the best syntatic
         
-        // Find the best ngrams
+        // Find the preprocessing
+        String [] Pretraitements = {"Preprocessings.normalizeHyperlinks","Preprocessings.normalizeSlang",
+            "Preprocessings.removeStopWords","Preprocessings.lowercase","Preprocessings.normalizeEmails",
+            "Preprocessings.replacePseudonyms","Preprocessings.lemmatize"};
+        PropWithMeasure preproc = sbc.bestConfig(prop, measure, Pretraitements, Pretraitements.length, Out);
+        prop = preproc.getProp();
+        
+        Out.close();
     }
+    
 }

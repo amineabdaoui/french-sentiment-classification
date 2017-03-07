@@ -33,8 +33,9 @@ public class Pretraitements {
         BufferedReader r = null;
         
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("argot.txt")));
-
+        //r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("argot.txt")));
+        r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources//argot.txt")));
+        
         String line;
         int i=0;
         while ((line=r.readLine())!=null) {
@@ -104,7 +105,8 @@ public class Pretraitements {
         ArrayList<String> Neg = new ArrayList<>();
         
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        BufferedReader r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("Negations.txt")));
+        //BufferedReader r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("Negations.txt")));
+        BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources//Negations.txt")));
         
         while ((s=r.readLine())!=null) Neg.add(s);
         r.close();
@@ -140,8 +142,8 @@ public class Pretraitements {
         ArrayList<String> Neg = new ArrayList<>();
         
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        BufferedReader r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("Negations.txt")));
-        
+        //BufferedReader r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("Negations.txt")));
+        BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources//Negations.txt")));        
         while ((s=r.readLine())!=null) Neg.add(s);
         r.close();
         StringTokenizer st = new StringTokenizer(tweet, " \n         .,;:'‘’\"()?[]!-_\\/“<>$&®´…«»1234567890", true);
@@ -176,8 +178,8 @@ public class Pretraitements {
         ArrayList<String> Neg = new ArrayList<>();
         
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        BufferedReader r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("Negations.txt")));
-        
+        //BufferedReader r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("Negations.txt")));
+        BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources//Negations.txt")));        
         while ((s=r.readLine())!=null) Neg.add(s);
         r.close();
         StringTokenizer st = new StringTokenizer(tweet, " \n         .,;:'‘’\"()?[]!-_\\/“<>$&®´…«»1234567890", true);
