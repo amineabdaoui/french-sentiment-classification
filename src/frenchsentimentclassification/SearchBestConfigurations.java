@@ -14,6 +14,7 @@ import weka.classifiers.functions.SMO;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.filters.Filter;
+import weka.filters.supervised.attribute.AttributeSelection;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 /**
@@ -24,6 +25,8 @@ public class SearchBestConfigurations {
     
     private ArrayList<Instances> trains;
     private ArrayList<Instances> tests;
+    private ArrayList<Instances> trainsNgrams;
+    private ArrayList<Instances> testsNgrams;
     
     public SearchBestConfigurations(ArrayList<Instances> trs, ArrayList<Instances> tss){
         trains = new ArrayList<Instances>(trs);
@@ -67,12 +70,29 @@ public class SearchBestConfigurations {
             prop.setProperty("Ngrams.max", alProp.get(bestIndex).getProperty("Ngrams.max"));
             prop.store(out, null);
         }
-        System.out.println(alProp.get(bestIndex).getProperty("Ngrams.min")+" "+alProp.get(bestIndex).getProperty("Ngrams.max"));
-
-        //return prop;
+        System.out.println(" => Best: "+alProp.get(bestIndex).getProperty("Ngrams.min")+" "+alProp.get(bestIndex).getProperty("Ngrams.max"));
+        setInstancesNgrams(prop);
         PropWithMeasure PM = new PropWithMeasure(prop, alMiF.get(bestIndex));
         
-        return PM; 
+        return PM;
+    }
+    
+    private void setInstancesNgrams(Properties props) throws Exception{
+        Instances train, test;
+        trainsNgrams = new ArrayList<Instances>();
+        testsNgrams = new ArrayList<Instances>();
+        for (int i=0; i<trains.size(); i++){
+            train = new Instances(trains.get(i));
+            test = new Instances(tests.get(i));
+            StringToWordVector filter = Tokenisation.WordNgrams(props);
+            filter.setInputFormat(train);
+            train = Filter.useFilter(train, filter);
+            test = Filter.useFilter(test, filter);
+            train.setClass(train.attribute("_class"));
+            test.setClass(train.attribute("_class"));
+            trainsNgrams.add(train);
+            testsNgrams.add(test);
+        }
     }
     
     public double runNgrams(Properties props) throws FileNotFoundException, IOException, Exception{
@@ -82,7 +102,6 @@ public class SearchBestConfigurations {
             train = new Instances(trains.get(i));
             test = new Instances(tests.get(i));
             StringToWordVector filter = Tokenisation.WordNgrams(props);
-            
             filter.setInputFormat(train);
             train = Filter.useFilter(train, filter);
             test = Filter.useFilter(test, filter);
@@ -97,6 +116,45 @@ public class SearchBestConfigurations {
         return miF/trains.size();
     }
     
+    public double AttributeSelection(Properties props, double measure, PrintWriter Out) throws FileNotFoundException, IOException, Exception{
+        Instances train, test;
+        System.out.println("Without attribute selection = "+measure);
+        double miF=0;
+        ArrayList<Instances> NewTrains = new ArrayList<Instances>();
+        ArrayList<Instances> NewTests = new ArrayList<Instances>();
+        for (int i=0; i<trains.size(); i++){
+            train = new Instances(trainsNgrams.get(i));
+            test = new Instances(testsNgrams.get(i));
+            AttributeSelection filter = SelectionAttributs.InfoGainAttributeEval(train);
+            train = Filter.useFilter(train, filter);
+            test = Filter.useFilter(test, filter);
+            train.setClass(train.attribute("_class"));
+            test.setClass(train.attribute("_class"));
+            NewTrains.add(train);
+            NewTests.add(test);
+            SMO classifier = new SMO();
+            classifier.buildClassifier(train);
+            Evaluation eTest = new Evaluation(train);
+            eTest.evaluateModel(classifier, test);
+            miF += eTest.unweightedMicroFmeasure();
+        }
+        miF = miF/trains.size();
+        System.out.println("With attribute selection = "+miF);
+        Out.println("With attribute selection = "+miF);
+        Out.flush();
+        if (miF>measure){
+            System.out.println(" => Selected");
+            Out.println(" => Selected");
+            trainsNgrams = NewTrains;
+            testsNgrams = NewTests;
+        } else {
+            System.out.println(" => Not selected");
+            Out.println(" => Not selected");
+        }
+        Out.flush();
+        return miF;
+    }
+    
     public double run(Properties props) throws FileNotFoundException, IOException, Exception{
         Instances train, test;
         double miF=0;
@@ -104,23 +162,58 @@ public class SearchBestConfigurations {
             train = new Instances(trains.get(i));
             test = new Instances(tests.get(i));
             StringToWordVector filter = Tokenisation.WordNgrams(props);
-            
             ConstructionARFF obj = new ConstructionARFF(props);
             train = obj.ConstructionInstances(train);
             test = obj.ConstructionInstances(test);
-            
             filter.setInputFormat(train);
             train = Filter.useFilter(train, filter);
             test = Filter.useFilter(test, filter);
             train.setClass(train.attribute("_class"));
             test.setClass(train.attribute("_class"));
             SMO classifier = new SMO();
+            classifier.setC(Double.parseDouble(props.getProperty("SVM.CompexityParameter")));
             classifier.buildClassifier(train);
             Evaluation eTest = new Evaluation(train);
             eTest.evaluateModel(classifier, test);
             miF += eTest.unweightedMicroFmeasure();
         }
         return miF/trains.size();
+    }
+    
+    public PropWithMeasure bestComSVM(Properties props, double measure, PrintWriter Out) throws FileNotFoundException, IOException, Exception{
+        Instances train, test;
+        ArrayList<Double> alMiF = new ArrayList<Double>();
+        double miF;
+        for (double c=0; c<5 ; c=c+0.1){
+            miF=0;
+            for (int i=0; i<trains.size(); i++){
+                train = new Instances(trainsNgrams.get(i));
+                test = new Instances(testsNgrams.get(i));
+                SMO classifier = new SMO();
+                classifier.setC(c);
+                classifier.buildClassifier(train);
+                Evaluation eTest = new Evaluation(train);
+                eTest.evaluateModel(classifier, test);
+                miF += eTest.unweightedMicroFmeasure();
+            }
+            alMiF.add(miF);
+            System.out.println("c="+c+" , result="+miF);
+            Out.println("c="+c+" , result="+miF);
+            Out.flush();
+        }
+        double bestRes = Collections.max(alMiF);
+        int bestIndex = alMiF.indexOf(bestRes);
+        System.out.println(" => Best: "+bestIndex);
+        Out.println(" => Best: "+bestIndex);
+        Out.flush();
+        try (FileOutputStream out = new FileOutputStream("test/config.properties")) {
+            props.setProperty("SVM.CompexityParameter", Double.toString(bestRes));
+            props.store(out, null);
+        }
+        
+        PropWithMeasure PM = new PropWithMeasure(props, bestRes);
+        
+        return PM;
     }
     
     public PropWithMeasure bestConfig(Properties prop, double OldMesure, String[] Pretraitements, int SizePretraitements, PrintWriter Out) throws IOException, Exception{
@@ -189,7 +282,6 @@ public class SearchBestConfigurations {
         
         PropWithMeasure PM = new PropWithMeasure(prop, bestresult);
         
-        //return prop;
         return PM; 
     }
     

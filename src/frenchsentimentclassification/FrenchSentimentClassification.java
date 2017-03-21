@@ -74,24 +74,72 @@ public class FrenchSentimentClassification {
         
         
         SearchBestConfigurations sbc = new SearchBestConfigurations(trains,tests);
+        
         // Find the best ngrams
-        System.out.println("####################");
+        System.out.println("#####################");
         System.out.println("       Ngrams");
-        System.out.println("####################");
+        System.out.println("#####################");
+        Out.println("#####################");
+        Out.println("       Ngrams");
+        Out.println("#####################");
+        Out.flush();
         //prop = sbc.bestNgrams(prop);
         PropWithMeasure ngrams = sbc.bestNgrams(prop, Out);
         prop = ngrams.getProp();
         double measure = ngrams.getMeasure();
+        
+        // Evalute the feature selection
+        System.out.println("#############################");
+        System.out.println("       Feture Selection");
+        System.out.println("#############################");
+        Out.println("#############################");
+        Out.println("       Feture Selection");
+        Out.println("#############################");
+        Out.flush();
+        measure = sbc.AttributeSelection(prop, measure, Out);
+        
         // Estimate the best complexity parameter
+        System.out.println("#############################");
+        System.out.println("       Complexity Parameter");
+        System.out.println("#############################");
+        Out.println("#############################");
+        Out.println("       Complexity Parameter");
+        Out.println("#############################");
+        Out.flush();
+        PropWithMeasure ComSVM = sbc.bestComSVM(prop, measure, Out);
+        prop = ComSVM.getProp();
+        measure = ComSVM.getMeasure();
         
-        // Find the best syntatic
-        
-        // Find the preprocessing
+        // Choose the best preprocessings
+        System.out.println("############################");
+        System.out.println("       Preprocessings");
+        System.out.println("############################");
+        Out.println("############################");
+        Out.println("       Preprocessings");
+        Out.println("############################");
+        Out.flush();
         String [] Pretraitements = {"Preprocessings.normalizeHyperlinks","Preprocessings.normalizeSlang",
             "Preprocessings.removeStopWords","Preprocessings.lowercase","Preprocessings.normalizeEmails",
             "Preprocessings.replacePseudonyms","Preprocessings.lemmatize"};
         PropWithMeasure preproc = sbc.bestConfig(prop, measure, Pretraitements, Pretraitements.length, Out);
         prop = preproc.getProp();
+        measure = preproc.getMeasure();
+        Out.println("Old measure : "+measure+"\n");
+        
+        // Choose the best syntatic features
+        System.out.println("##############################");
+        System.out.println("      Syntatic features");
+        System.out.println("##############################");
+        Out.println("############################");
+        Out.println("       Syntatic features");
+        Out.println("############################");
+        Out.flush();
+        String [] SyntacticFeatures = {"SyntacticFeatures.countHashtags","SyntacticFeatures.presencePunctuation",
+            "SyntacticFeatures.countElongatedWords","SyntacticFeatures.countCapitalizations","SyntacticFeatures.countNegators",
+            "SyntacticFeatures.presenceSmileys","SyntacticFeatures.presencePartOfSpeechTags"};
+        PropWithMeasure Syntactic = sbc.bestConfig(prop, measure, SyntacticFeatures, SyntacticFeatures.length, Out);
+        prop = Syntactic.getProp();
+        
         
         Out.close();
     }
