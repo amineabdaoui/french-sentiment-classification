@@ -196,6 +196,7 @@ public class SearchBestConfigurations {
                 eTest.evaluateModel(classifier, test);
                 miF += eTest.unweightedMicroFmeasure();
             }
+            miF=miF/trains.size();
             alMiF.add(miF);
             System.out.println("c="+c+" , result="+miF);
             Out.println("c="+c+" , result="+miF);
