@@ -39,8 +39,8 @@ public class FrenchSentimentClassification {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws FileNotFoundException, IOException, Exception {
-        //String file=args[0];
-        String file="test/task1-train.arff";
+        String file=args[0];
+        //String file="test/task1-train.arff";
         
         PrintWriter Out = new PrintWriter("SaveResults.txt");
         
@@ -128,6 +128,19 @@ public class FrenchSentimentClassification {
         
         // Choose the best syntatic features
         System.out.println("##############################");
+        System.out.println("      Lexicon features");
+        System.out.println("##############################");
+        Out.println("############################");
+        Out.println("       Lexicon features");
+        Out.println("############################");
+        Out.flush();
+        String [] LexiconFeatures = {"Lexicons.feelPol","Lexicons.affectsPol","Lexicons.dikoPol","Lexicons.polarimotsPol",
+            "Lexicons.affectsEmo","Lexicons.dikoEmo","Lexicons.feelEmo"};
+        PropWithMeasure Lexicon = sbc.bestConfig(prop, measure, LexiconFeatures, LexiconFeatures.length, Out);
+        prop = Lexicon.getProp();
+        
+        // Choose the best syntatic features
+        System.out.println("##############################");
         System.out.println("      Syntatic features");
         System.out.println("##############################");
         Out.println("############################");
@@ -140,8 +153,32 @@ public class FrenchSentimentClassification {
         PropWithMeasure Syntactic = sbc.bestConfig(prop, measure, SyntacticFeatures, SyntacticFeatures.length, Out);
         prop = Syntactic.getProp();
         
+        // Evalute the feature selection
+        System.out.println("#############################");
+        System.out.println("       Feture Selection");
+        System.out.println("#############################");
+        Out.println("#############################");
+        Out.println("       Feture Selection");
+        Out.println("#############################");
+        Out.flush();
+        measure = sbc.AttributeSelection(prop, measure, Out);
+        
+        // Estimate the best complexity parameter
+        System.out.println("#############################");
+        System.out.println("       Complexity Parameter");
+        System.out.println("#############################");
+        Out.println("#############################");
+        Out.println("       Complexity Parameter");
+        Out.println("#############################");
+        Out.flush();
+        ComSVM = sbc.bestComSVM(prop, measure, Out);
+        prop = ComSVM.getProp();
+        measure = ComSVM.getMeasure();
+        System.out.println("Best : "+measure);
+        Out.println("Best : "+measure);
+        
         
         Out.close();
     }
-    
+     
 }

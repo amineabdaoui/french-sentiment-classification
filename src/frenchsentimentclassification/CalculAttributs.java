@@ -150,7 +150,7 @@ public class CalculAttributs {
         while ((line=r.readLine())!=null) Neg.add(line);
         r.close();
         // tt4j
-        String ch="TreeTagger";
+        String ch="/data/TreeTagger";
         //if (prop.getProperty("TreeTagger.path")!=null) ch=prop.getProperty("TreeTagger.path");
         lm = new LemmatiseurHandler(ch);
     }

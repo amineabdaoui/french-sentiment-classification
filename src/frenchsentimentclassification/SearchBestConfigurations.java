@@ -147,6 +147,10 @@ public class SearchBestConfigurations {
             Out.println(" => Selected");
             trainsNgrams = NewTrains;
             testsNgrams = NewTests;
+            try (FileOutputStream out = new FileOutputStream("test/config.properties")) {
+            props.setProperty("FeatureSelection.InfoGain", "Yes");
+            props.store(out, null);
+        }
         } else {
             System.out.println(" => Not selected");
             Out.println(" => Not selected");
@@ -184,7 +188,7 @@ public class SearchBestConfigurations {
         Instances train, test;
         ArrayList<Double> alMiF = new ArrayList<Double>();
         double miF;
-        for (double c=0; c<5 ; c=c+0.1){
+        for (double c=0; c<=1 ; c=c+0.1){
             miF=0;
             for (int i=0; i<trains.size(); i++){
                 train = new Instances(trainsNgrams.get(i));
@@ -204,11 +208,11 @@ public class SearchBestConfigurations {
         }
         double bestRes = Collections.max(alMiF);
         int bestIndex = alMiF.indexOf(bestRes);
-        System.out.println(" => Best: "+bestIndex);
-        Out.println(" => Best: "+bestIndex);
+        System.out.println(" => Best: "+bestRes+" ("+bestIndex+")");
+        Out.println(" => Best: "+bestRes+" ("+bestIndex+")");
         Out.flush();
         try (FileOutputStream out = new FileOutputStream("test/config.properties")) {
-            props.setProperty("SVM.CompexityParameter", Double.toString(bestRes));
+            props.setProperty("SVM.CompexityParameter", Double.toString(bestIndex*0.1));
             props.store(out, null);
         }
         
@@ -240,7 +244,7 @@ public class SearchBestConfigurations {
             FileOutputStream out = new FileOutputStream("tmp.properties");
             ArrayList<Integer> Tmp = ArrCombPretraitements.get(i); //Creation de la liste de combinaison
             for(int j=0; j<Tmp.size(); j++){    //Modification du fichier du configuration
-                propTampon.setProperty(Pretraitements[Tmp.get(j)], "yes");
+                propTampon.setProperty(Pretraitements[Tmp.get(j)], "Yes");
                 //System.out.println(propTampon.getProperty(Pretraitements[Tmp.get(j)]));
             }
             propTampon.store(out, null);
