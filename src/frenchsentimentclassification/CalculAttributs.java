@@ -48,7 +48,7 @@ public class CalculAttributs {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         // FEEL
         if (prop.getProperty("Lexicons.feelPol").equalsIgnoreCase("yes") || prop.getProperty("Lexicons.feelEmo").equalsIgnoreCase("yes")){
-            r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("FEEL.txt")));
+            r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources/FEEL.txt")));
             for (int i=1;i<=nbClassesFEEL;i++) alEmoFEEL.add(new ArrayList<String>());
             while ((line=r.readLine())!=null){
                 // Polarité
@@ -67,7 +67,7 @@ public class CalculAttributs {
         }
         // Polarimots
         if (prop.getProperty("Lexicons.polarimotsPol").equalsIgnoreCase("yes")){
-            r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("Polarimots.txt")));
+            r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources/Polarimots.txt")));
             while ((line=r.readLine())!=null){
                 switch (line.split(";")[3]) {
                     case "positive":
@@ -85,7 +85,7 @@ public class CalculAttributs {
         }
         // Affects_Pol
         if (prop.getProperty("Lexicons.affectsPol").equalsIgnoreCase("yes")){
-            r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("Augustin-pol.txt")));
+            r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources/Augustin-pol.txt")));
             while ((line=r.readLine())!=null){
                 switch (line.split(";")[1]) {
                     case "positive":
@@ -103,7 +103,7 @@ public class CalculAttributs {
         }
         // Affects_Emo
         if (prop.getProperty("Lexicons.affectsEmo").equalsIgnoreCase("yes")){
-            r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("Augustin-emo.txt")));
+            r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources/Augustin-emo.txt")));
             ArrayList<String> alClass = new ArrayList<>();
             while ((line=r.readLine())!=null){
                 if (!alClass.contains(line.split(";")[1])){
@@ -116,7 +116,7 @@ public class CalculAttributs {
         }
         // Diko
         if (prop.getProperty("Lexicons.dikoPol").equalsIgnoreCase("yes")){
-            r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("Diko.txt")));
+            r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources/Diko.txt")));
             while ((line=r.readLine())!=null){
                 switch (line.split(";")[2]) {
                     case "positive":
@@ -134,7 +134,7 @@ public class CalculAttributs {
         }
         // Diko_Emo
         if (prop.getProperty("Lexicons.dikoEmo").equalsIgnoreCase("yes")){
-            r = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("Diko-emo.txt")));
+            r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources/Diko-emo.txt")));
             ArrayList<String> alC = new ArrayList<>();
             while ((line=r.readLine())!=null){
                 if (!alC.contains(line.split(";")[1])){
@@ -365,7 +365,7 @@ public class CalculAttributs {
         String lasttoken = tok[tok.length-1] ;
         if (lasttoken.equals("lienHTTP")) lasttoken = tok[tok.length-2];
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        BufferedReader br = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("emoticone.txt")));
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("ressources/emoticone.txt")));
         String ligne;
         while ((ligne=br.readLine())!=null){
                 String [] tmp = ligne.split("\t");
@@ -392,7 +392,7 @@ public class CalculAttributs {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         while (st.hasMoreElements()) {
                 String token = (String) st.nextElement() ;
-                BufferedReader br = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("emoticone.txt")));
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("ressources/emoticone.txt")));
                 String ligne;	
                 while ((ligne=br.readLine())!=null){
                         String [] tmp = ligne.split("\t");
@@ -412,7 +412,7 @@ public class CalculAttributs {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         while (st.hasMoreElements()) {
                 String token = (String) st.nextElement() ;
-                BufferedReader br = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("emoticone.txt")));
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("ressources/emoticone.txt")));
                 String ligne;	
                 while ((ligne=br.readLine())!=null){
                         String [] tmp = ligne.split("\t");

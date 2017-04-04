@@ -124,7 +124,7 @@ public class FrenchSentimentClassification {
         PropWithMeasure preproc = sbc.bestConfig(prop, measure, Pretraitements, Pretraitements.length, Out);
         prop = preproc.getProp();
         measure = preproc.getMeasure();
-        Out.println("Old measure : "+measure+"\n");
+        Out.println("Measure : "+measure+"\n");
         
         // Choose the best syntatic features
         System.out.println("##############################");

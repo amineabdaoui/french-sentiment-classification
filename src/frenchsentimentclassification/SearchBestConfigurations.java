@@ -148,7 +148,7 @@ public class SearchBestConfigurations {
             trainsNgrams = NewTrains;
             testsNgrams = NewTests;
             try (FileOutputStream out = new FileOutputStream("test/config.properties")) {
-            props.setProperty("FeatureSelection.InfoGain", "Yes");
+            props.setProperty("FeatureSelection.InfoGain", "yes");
             props.store(out, null);
         }
         } else {
@@ -244,7 +244,7 @@ public class SearchBestConfigurations {
             FileOutputStream out = new FileOutputStream("tmp.properties");
             ArrayList<Integer> Tmp = ArrCombPretraitements.get(i); //Creation de la liste de combinaison
             for(int j=0; j<Tmp.size(); j++){    //Modification du fichier du configuration
-                propTampon.setProperty(Pretraitements[Tmp.get(j)], "Yes");
+                propTampon.setProperty(Pretraitements[Tmp.get(j)], "yes");
                 //System.out.println(propTampon.getProperty(Pretraitements[Tmp.get(j)]));
             }
             propTampon.store(out, null);
@@ -275,7 +275,7 @@ public class SearchBestConfigurations {
         if (bestindice != -1){
             try (FileOutputStream out = new FileOutputStream("test/config.properties")) {
                 ArrayList<Integer> Tmp = ArrCombPretraitements.get(bestindice);
-                System.out.println("Best config pretraitement trouvée : test/config"+bestindice+".properties" );
+                System.out.println("Best config pretraitement trouvée : "+bestindice);
                 for(int j=0; j<Tmp.size(); j++){    //Modification du fichier du configuration
                     prop.setProperty(Pretraitements[Tmp.get(j)], "yes");
                 }
