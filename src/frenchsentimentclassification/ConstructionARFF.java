@@ -19,9 +19,8 @@ public class ConstructionARFF {
     
     private final ArrayList<String> POS = new ArrayList<>();
     protected static final int nbClassesFEEL=7;
-    protected static final int nbClassesAffects=45;
+    protected static final int nbClassesAffects=36;
     protected static final int nbClassesDiko=1198;
-    protected static final int nbEmbeddings=100;
     private CalculAttributs ca;
     private Properties prop;
     

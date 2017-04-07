@@ -23,6 +23,7 @@ import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.rules.JRip;
 import weka.classifiers.trees.J48;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.tokenizers.NGramTokenizer;
 import static weka.estimators.Estimator.clone;
