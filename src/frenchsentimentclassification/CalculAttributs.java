@@ -191,6 +191,45 @@ public class CalculAttributs {
         return count;
     }
     
+    public int ComputeIncongruity(String tweet){
+        int count=0;
+        String lemme, last="";
+        StringTokenizer st = new StringTokenizer(tweet, " 	.,;:'\"|()?!-_/<>‘’“”…«»•&#{[|`^@]}$*%1234567890", false);
+        while (st.hasMoreElements()){
+            lemme=st.nextToken();
+            if(lemme.contains("|")) lemme=lemme.split("|")[0];
+            if (alPosFEEL.contains(lemme) || alPosAffects.contains(lemme) || alPosPolarimots.contains(lemme)){
+                if (last.equals("neg")) count++;
+                last="pos";
+            }
+            else if (alNegFEEL.contains(lemme) || alNegAffects.contains(lemme) || alNegPolarimots.contains(lemme)){
+                if (last.equals("pos")) count++;
+                last="neg";
+            }
+        }
+        return count;
+    }
+    
+    public int ComputeIncongruityAll(String tweet){
+        int count=0;
+        String lemme, last="";
+        StringTokenizer st = new StringTokenizer(tweet, " 	.,;:'\"|()?!-_/<>‘’“”…«»•&#{[|`^@]}$*%1234567890", false);
+        while (st.hasMoreElements()){
+            lemme=st.nextToken();
+            if(lemme.contains("|")) lemme=lemme.split("|")[0];
+            if (alPosFEEL.contains(lemme) || alPosAffects.contains(lemme) || alPosPolarimots.contains(lemme) || alPosDiko.contains(lemme)){
+                if (last.equals("neg")) count++;
+                last="pos";
+            }
+            else if (alNegFEEL.contains(lemme) || alNegAffects.contains(lemme) || alNegPolarimots.contains(lemme) || alNegDiko.contains(lemme)){
+                if (last.equals("pos")) count++;
+                last="neg";
+            }
+        }
+        return count;
+    }
+    
+    
     public int ComputeEmotionFEEL(String tweet, int i) throws FileNotFoundException, IOException, TreeTaggerException{
         int count=0;
         String lemme;

@@ -45,7 +45,7 @@ public class FrenchSentimentClassification {
         
         PrintWriter Out = new PrintWriter("SaveResults.txt");
         
-        String propPath="test/config.properties";
+        String propPath="config.properties";
         Properties prop = new Properties();
 	InputStream input = new FileInputStream(propPath);
         prop.load(input);
@@ -127,7 +127,7 @@ public class FrenchSentimentClassification {
         measure = preproc.getMeasure();
         Out.println("Measure : "+measure+"\n");
         
-        // Choose the best syntatic features
+        // Choose the best lexicon features
         System.out.println("##############################");
         System.out.println("      Lexicon features");
         System.out.println("##############################");
@@ -138,7 +138,21 @@ public class FrenchSentimentClassification {
         String [] LexiconFeatures = {"Lexicons.feelPol","Lexicons.affectsPol","Lexicons.dikoPol","Lexicons.polarimotsPol",
             "Lexicons.affectsEmo","Lexicons.dikoEmo","Lexicons.feelEmo"};
         PropWithMeasure Lexicon = sbc.bestConfig(prop, measure, LexiconFeatures, LexiconFeatures.length, Out);
+        measure = Lexicon.getMeasure();
         prop = Lexicon.getProp();
+        
+        // Choose the best incontiguity features
+        System.out.println("##############################");
+        System.out.println("      Incontiguity features");
+        System.out.println("##############################");
+        Out.println("############################");
+        Out.println("       Incontiguity features");
+        Out.println("############################");
+        Out.flush();
+        String [] IncontiguityFeatures = {"Lexicons.Incontiguity","Lexicons.IncontiguityAll"};
+        PropWithMeasure Incontiguity = sbc.bestConfig(prop, measure, IncontiguityFeatures, IncontiguityFeatures.length, Out);
+        measure = Incontiguity.getMeasure();
+        prop = Incontiguity.getProp();
         
         // Choose the best syntatic features
         System.out.println("##############################");
@@ -152,6 +166,7 @@ public class FrenchSentimentClassification {
             "SyntacticFeatures.countElongatedWords","SyntacticFeatures.countCapitalizations","SyntacticFeatures.countNegators",
             "SyntacticFeatures.presenceSmileys","SyntacticFeatures.presencePartOfSpeechTags"};
         PropWithMeasure Syntactic = sbc.bestConfig(prop, measure, SyntacticFeatures, SyntacticFeatures.length, Out);
+        measure = Syntactic.getMeasure();
         prop = Syntactic.getProp();
         
         // Evalute the feature selection

@@ -14125,3 +14125,6 @@
 14127;remercier;positive;1;0;0;0;0;0;1
 14128;remerciment;positive;1;0;0;0;0;0;1
 14129;moins;negative;0;0;0;0;0;0;0
+14130;meuuuuuuuuuh;negative;0;0;0;0;0;0;1
+14131;meuh;negative;0;0;0;0;0;0;1
+
