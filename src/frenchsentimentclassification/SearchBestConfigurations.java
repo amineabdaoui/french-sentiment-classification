@@ -111,7 +111,8 @@ public class SearchBestConfigurations {
             classifier.buildClassifier(train);
             Evaluation eTest = new Evaluation(train);
             eTest.evaluateModel(classifier, test);
-            miF += eTest.unweightedMicroFmeasure();
+            if (props.getProperty("measure").equals("micro")) miF += eTest.unweightedMicroFmeasure();
+            else miF += eTest.unweightedMacroFmeasure();
         }
         return miF/trains.size();
     }
@@ -136,7 +137,8 @@ public class SearchBestConfigurations {
             classifier.buildClassifier(train);
             Evaluation eTest = new Evaluation(train);
             eTest.evaluateModel(classifier, test);
-            miF += eTest.unweightedMicroFmeasure();
+            if (props.getProperty("measure").equals("micro")) miF += eTest.unweightedMicroFmeasure();
+            else miF += eTest.unweightedMacroFmeasure();
         }
         miF = miF/trains.size();
         System.out.println("With attribute selection = "+miF);
@@ -179,7 +181,8 @@ public class SearchBestConfigurations {
             classifier.buildClassifier(train);
             Evaluation eTest = new Evaluation(train);
             eTest.evaluateModel(classifier, test);
-            miF += eTest.unweightedMicroFmeasure();
+            if (props.getProperty("measure").equals("micro")) miF += eTest.unweightedMicroFmeasure();
+            else miF += eTest.unweightedMacroFmeasure();
         }
         return miF/trains.size();
     }
@@ -198,7 +201,8 @@ public class SearchBestConfigurations {
                 classifier.buildClassifier(train);
                 Evaluation eTest = new Evaluation(train);
                 eTest.evaluateModel(classifier, test);
-                miF += eTest.unweightedMicroFmeasure();
+                if (props.getProperty("measure").equals("micro")) miF += eTest.unweightedMicroFmeasure();
+                else miF += eTest.unweightedMacroFmeasure();
             }
             miF=miF/trains.size();
             alMiF.add(miF);
