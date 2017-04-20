@@ -59,6 +59,8 @@ public class ConstructionARFF {
         if (prop.getProperty("Lexicons.feelEmo").equalsIgnoreCase("yes")) for (int i=0; i<nbClassesFEEL; i++) newData.insertAttributeAt(new Attribute("_countEmotionFEEL"+(i+1)), newData.numAttributes());
         if (prop.getProperty("Lexicons.affectsEmo").equalsIgnoreCase("yes")) for (int i=0; i<nbClassesAffects; i++) newData.insertAttributeAt(new Attribute("_countEmotionAffects"+(i+1)), newData.numAttributes());
         if (prop.getProperty("Lexicons.dikoEmo").equalsIgnoreCase("yes")) for (int i=0; i<nbClassesDiko; i++) newData.insertAttributeAt(new Attribute("_countEmotionDiko"+(i+1)), newData.numAttributes());
+        if (prop.getProperty("Lexicons.incongruity").equalsIgnoreCase("yes")) newData.insertAttributeAt(new Attribute("_countIncongruity"), newData.numAttributes());
+        if (prop.getProperty("Lexicons.incongruityAll").equalsIgnoreCase("yes")) newData.insertAttributeAt(new Attribute("_countIncongruityAll"), newData.numAttributes());
         // Data
         for (int i=0; i<newData.numInstances(); i++){
             tweet = newData.instance(i).stringValue(data.attribute("_text"));

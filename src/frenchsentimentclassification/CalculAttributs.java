@@ -47,7 +47,7 @@ public class CalculAttributs {
         // ClassLoader is used to load resources files from the jar
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         // FEEL
-        if (prop.getProperty("Lexicons.feelPol").equalsIgnoreCase("yes") || prop.getProperty("Lexicons.feelEmo").equalsIgnoreCase("yes")){
+        if (prop.getProperty("Lexicons.feelPol").equalsIgnoreCase("yes") || prop.getProperty("Lexicons.feelEmo").equalsIgnoreCase("yes") || prop.getProperty("Lexicons.incongruity").equalsIgnoreCase("yes") || prop.getProperty("Lexicons.incongruityAll").equalsIgnoreCase("yes")){
             r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources/FEEL.txt")));
             for (int i=1;i<=nbClassesFEEL;i++) alEmoFEEL.add(new ArrayList<String>());
             while ((line=r.readLine())!=null){
@@ -66,7 +66,7 @@ public class CalculAttributs {
             r.close();
         }
         // Polarimots
-        if (prop.getProperty("Lexicons.polarimotsPol").equalsIgnoreCase("yes")){
+        if (prop.getProperty("Lexicons.polarimotsPol").equalsIgnoreCase("yes") || prop.getProperty("Lexicons.incongruity").equalsIgnoreCase("yes") || prop.getProperty("Lexicons.incongruityAll").equalsIgnoreCase("yes")){
             r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources/Polarimots.txt")));
             while ((line=r.readLine())!=null){
                 switch (line.split(";")[3]) {
@@ -84,7 +84,7 @@ public class CalculAttributs {
             r.close();
         }
         // Affects_Pol
-        if (prop.getProperty("Lexicons.affectsPol").equalsIgnoreCase("yes")){
+        if (prop.getProperty("Lexicons.affectsPol").equalsIgnoreCase("yes") || prop.getProperty("Lexicons.incongruity").equalsIgnoreCase("yes") || prop.getProperty("Lexicons.incongruityAll").equalsIgnoreCase("yes")){
             r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources/Augustin-pol.txt")));
             while ((line=r.readLine())!=null){
                 switch (line.split(";")[1]) {
@@ -115,7 +115,7 @@ public class CalculAttributs {
             r.close();
         }
         // Diko
-        if (prop.getProperty("Lexicons.dikoPol").equalsIgnoreCase("yes")){
+        if (prop.getProperty("Lexicons.dikoPol").equalsIgnoreCase("yes") || prop.getProperty("Lexicons.incongruityAll").equalsIgnoreCase("yes")){
             r = new BufferedReader(new InputStreamReader(new FileInputStream("ressources/Diko.txt")));
             while ((line=r.readLine())!=null){
                 switch (line.split(";")[2]) {
