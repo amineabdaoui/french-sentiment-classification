@@ -193,7 +193,7 @@ public class FrenchSentimentClassification {
         Out.println("       Complexity Parameter");
         Out.println("#############################");
         Out.flush();
-        sbc.setInstancesNgrams(prop);
+        sbc.setInstances(prop);
         PropWithMeasure ComSVM = sbc.bestComSVM(prop, measure, Out);
         prop = ComSVM.getProp();
         measure = ComSVM.getMeasure();

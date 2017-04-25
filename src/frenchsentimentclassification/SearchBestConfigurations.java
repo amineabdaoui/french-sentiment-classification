@@ -95,6 +95,27 @@ public class SearchBestConfigurations {
         }
     }
     
+    public void setInstances(Properties props) throws Exception{
+        Instances train, test;
+        trainsNgrams = new ArrayList<Instances>();
+        testsNgrams = new ArrayList<Instances>();
+        for (int i=0; i<trains.size(); i++){
+            train = new Instances(trains.get(i));
+            test = new Instances(tests.get(i));
+            StringToWordVector filter = Tokenisation.WordNgrams(props);
+            ConstructionARFF obj = new ConstructionARFF(props);
+            train = obj.ConstructionInstances(train);
+            test = obj.ConstructionInstances(test);
+            filter.setInputFormat(train);
+            train = Filter.useFilter(train, filter);
+            test = Filter.useFilter(test, filter);
+            train.setClass(train.attribute("_class"));
+            test.setClass(train.attribute("_class"));
+            trainsNgrams.add(train);
+            testsNgrams.add(test);
+        }
+    }
+    
     public double runNgrams(Properties props) throws FileNotFoundException, IOException, Exception{
         Instances train, test;
         double miF=0;
