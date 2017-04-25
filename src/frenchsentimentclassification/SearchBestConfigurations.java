@@ -77,7 +77,7 @@ public class SearchBestConfigurations {
         return PM;
     }
     
-    private void setInstancesNgrams(Properties props) throws Exception{
+    public void setInstancesNgrams(Properties props) throws Exception{
         Instances train, test;
         trainsNgrams = new ArrayList<Instances>();
         testsNgrams = new ArrayList<Instances>();

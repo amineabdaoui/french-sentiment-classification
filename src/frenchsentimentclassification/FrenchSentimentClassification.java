@@ -41,11 +41,10 @@ public class FrenchSentimentClassification {
      */
     public static void main(String[] args) throws FileNotFoundException, IOException, Exception {
         String file=args[0];
-        //String file="test/task1-train.arff";
         
         PrintWriter Out = new PrintWriter("SaveResults.txt");
         
-        String propPath="config.properties";
+        String propPath="test/config.properties";
         Properties prop = new Properties();
 	InputStream input = new FileInputStream(propPath);
         prop.load(input);
@@ -76,6 +75,13 @@ public class FrenchSentimentClassification {
         
         SearchBestConfigurations sbc = new SearchBestConfigurations(trains,tests);
         
+        // Create Ngrams - specific
+        sbc.setInstancesNgrams(prop);
+        double measure = sbc.run(prop);
+        System.out.println("Measure = "+measure);
+        Out.println("Measure = "+measure);
+        Out.flush();
+        /*
         // Find the best ngrams
         System.out.println("#####################");
         System.out.println("       Ngrams");
@@ -139,7 +145,7 @@ public class FrenchSentimentClassification {
             "Lexicons.affectsEmo","Lexicons.dikoEmo","Lexicons.feelEmo"};
         PropWithMeasure Lexicon = sbc.bestConfig(prop, measure, LexiconFeatures, LexiconFeatures.length, Out);
         measure = Lexicon.getMeasure();
-        prop = Lexicon.getProp();
+        prop = Lexicon.getProp();*/
         
         // Choose the best incontiguity features
         System.out.println("##############################");
@@ -149,7 +155,7 @@ public class FrenchSentimentClassification {
         Out.println("       Incontiguity features");
         Out.println("############################");
         Out.flush();
-        String [] IncontiguityFeatures = {"Lexicons.Incontiguity","Lexicons.IncontiguityAll"};
+        String [] IncontiguityFeatures = {"Lexicons.incongruity","Lexicons.incongruityAll"};
         PropWithMeasure Incontiguity = sbc.bestConfig(prop, measure, IncontiguityFeatures, IncontiguityFeatures.length, Out);
         measure = Incontiguity.getMeasure();
         prop = Incontiguity.getProp();
@@ -187,7 +193,8 @@ public class FrenchSentimentClassification {
         Out.println("       Complexity Parameter");
         Out.println("#############################");
         Out.flush();
-        ComSVM = sbc.bestComSVM(prop, measure, Out);
+        sbc.setInstancesNgrams(prop);
+        PropWithMeasure ComSVM = sbc.bestComSVM(prop, measure, Out);
         prop = ComSVM.getProp();
         measure = ComSVM.getMeasure();
         System.out.println("Best : "+measure);
