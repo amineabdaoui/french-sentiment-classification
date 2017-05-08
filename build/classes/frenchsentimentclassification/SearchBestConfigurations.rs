@@ -1,0 +1,2 @@
+frenchsentimentclassification.SearchBestConfigurations
+frenchsentimentclassification.PropWithMeasure
